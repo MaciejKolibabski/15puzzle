@@ -1,11 +1,18 @@
 import argparse
 
-
-
-RUCH = []                   # tabela możliwych ruchów
-WEZEL_AKT = []
+RUCH = []  # tabela możliwych ruchów
+WEZEL_POCZ = []
 WEZEL_ROZW = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
 
+
+class Wezel:
+    def __init__(self, aktualna_tablica, rodzic, sciezka, poprzedni_ruch):
+        self.tablica = aktualna_tablica
+        if rodzic != "root":
+            self.rodzic = rodzic
+        self.sciezka = sciezka + poprzedni_ruch
+        #self.sciezka.append(poprzedni_ruch)
+        self.mozliwe_ruchy = RUCH
 
 
 def BFS():
@@ -28,16 +35,7 @@ def wczytaj_plik_poczatkowy():
                 pierwsza_linia = False
                 continue
             else:
-                WEZEL_AKT.append(linia.split())
-
-
-
-
-
-
-
-
-
+                WEZEL_POCZ.append(linia.split())
 
 
 if __name__ == '__main__':
@@ -52,9 +50,9 @@ if __name__ == '__main__':
     parametry = parser.parse_args()
 
     # Uruchamianie programu
-    # python main.py bfs RDUL 4x4_01_0001.txt 4x4_01_0001_bfs_rdul_sol.txt 4x4_01_0001_bfs_rdul_stats.txt
-    # python main.py dfs LUDR 4x4_01_0001.txt 4x4_01_0001_dfs_ludr_sol.txt 4x4_01_0001_dfs_ludr_stats.txt
-    # python main.py astr manh 4x4_01_0001.txt 4x4_01_0001_astr_manh_sol.txt 4x4_01_0001_astr_manh_stats.txt
+    # python main.py BFS RDUL 4x4_01_0001.txt 4x4_01_0001_bfs_rdul_sol.txt 4x4_01_0001_bfs_rdul_stats.txt
+    # python main.py DFS LUDR 4x4_01_0001.txt 4x4_01_0001_dfs_ludr_sol.txt 4x4_01_0001_dfs_ludr_stats.txt
+    # python main.py ASTR manh 4x4_01_0001.txt 4x4_01_0001_astr_manh_sol.txt 4x4_01_0001_astr_manh_stats.txt
 
     for i in parametry.ruch:
         RUCH.append(i)
