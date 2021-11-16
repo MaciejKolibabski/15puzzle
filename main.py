@@ -57,7 +57,6 @@ class Node:
 
 
 
-
 def czy_gotowe(rw, rozw):
     for i in range(len(rw)) :
         for j in range(len(rw)) :
@@ -66,41 +65,42 @@ def czy_gotowe(rw, rozw):
     return True
 
 
+
 def BFS():
     AKT_WEZEL = Node(WEZEL_POCZ,'Root','','')
-#    print('1....',AKT_WEZEL.tablica)
-    # ustal_puste_pole(AKT_WEZEL)
-    # ustal_mozliwe_ruchy(AKT_WEZEL)
-#    print('2....',PUSTE_POLE)
- #   print('3.....',AKT_WEZEL.mozliwe_ruchy)
-    # AKT_WEZEL.przesun_puste_pole('U')
-    # print(AKT_WEZEL.tablica)
-    # AKT_WEZEL.przesun_puste_pole('L')
-    # print(AKT_WEZEL.tablica)
     kolejka = []
     kolejka.append(AKT_WEZEL)
     licz=0
     while True:
         licz+=1
-        # kolejka.append(AKT_WEZEL)
         AKT_WEZEL = kolejka[0]
         ustal_puste_pole(AKT_WEZEL)
-        print('4...')
-        print('LEN3: ', len(kolejka),PUSTE_POLE,AKT_WEZEL.mozliwe_ruchy)
+        #print('LEN3: ', len(kolejka),PUSTE_POLE,AKT_WEZEL.mozliwe_ruchy)
         ustal_mozliwe_ruchy(AKT_WEZEL)
-        print('LEN3: ', len(kolejka), PUSTE_POLE)
-        print(AKT_WEZEL.tablica, 'tab')
+        #print('LEN3: ', len(kolejka), PUSTE_POLE)
+        #print(AKT_WEZEL.tablica, 'tab')
         print(AKT_WEZEL.tablica, 'Licznik: ' ,licz, PUSTE_POLE,AKT_WEZEL.sciezka,AKT_WEZEL.mozliwe_ruchy,PUSTE_POLE)
         if czy_gotowe(AKT_WEZEL.tablica,WEZEL_ROZW):
             return 'Rozwiązane poprawnie', AKT_WEZEL.tablica
         for element in AKT_WEZEL.mozliwe_ruchy:
             AKT_WEZEL.przesun_puste_pole(element)
             NOWY_WEZEL = AKT_WEZEL.dzieci[element]
-            print('_____n_', NOWY_WEZEL.tablica)
+            #print('_____n_', NOWY_WEZEL.tablica)
             kolejka.append(NOWY_WEZEL)
-        print('LEN: ' ,len(kolejka))
         kolejka.remove(AKT_WEZEL)
-        print('LEN2: ', len(kolejka))
+
+        zapis_do_pliku_rozw(parametry.plik_z_rozwiazaniem, str(AKT_WEZEL.sciezka), AKT_WEZEL.sciezka)
+
+
+
+def zapis_do_pliku_rozw(plik, dlugosc_rozw, pokonane_ruchy):
+    file = open(plik, 'w+')
+    file.write(str(len(dlugosc_rozw)))
+    file.write('\n')
+    file.write(str(pokonane_ruchy))
+    file.close()
+
+
 
 
 
@@ -132,14 +132,10 @@ def ustal_puste_pole(WEZEL):
 
 
 def ustal_mozliwe_ruchy(WEZEL):
-    usu_U=False
-    usu_D=False
-    usu_L=False
-    usu_R=False
 
     TabRob = WEZEL.mozliwe_ruchy  # ['L','R','U','D']
     #TabRob = RUCH  # ['L','R','U','D']
-    print('umr___',TabRob)
+    #print('umr___',TabRob)
 
     #możliwości ruchu w zaleności od pozycji pustego miejsca w tablicy
     if (PUSTE_POLE[0] == 0 and 'U' in TabRob) :
