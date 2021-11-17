@@ -1,5 +1,6 @@
 import argparse
 import time
+import random
 
 RUCH = []  # tabela możliwych ruchów- L U R D
 WEZEL_POCZ = []
@@ -15,6 +16,7 @@ class Node:
         if rodzic != "root":
             self.rodzic = rodzic
         self.dzieci = {}
+        self.wynikfunkcji = {}
         self.sciezka = sciezka + poprzedni_ruch
         # self.sciezka.append(poprzedni_ruch)
         self.mozliwe_ruchy = RUCH.copy()
@@ -169,8 +171,7 @@ def DFS():
             nowy_ruch = AKT_WEZEL.mozliwe_ruchy[0]  # ustalenie 1ego możliwego ruchu
             liczba_przetworzonych_wezlow += 1
             print('działamy !!!', nowy_ruch, PUSTE_POLE)
-            AKT_WEZEL.przesun_puste_pole(
-                nowy_ruch)  # przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
+            AKT_WEZEL.przesun_puste_pole(nowy_ruch)  # przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
             NOWY_WEZEL = AKT_WEZEL.dzieci[nowy_ruch]  # utworzenie nowego węzła
             AKT_WEZEL.mozliwe_ruchy.remove(nowy_ruch)  # w starym węźłe usuwamy ruch który już wykonaliśmy
             aktualna_glebokosc += 1  # zwiększenie głębokości bo przechodzimy do węzła
@@ -182,6 +183,99 @@ def DFS():
 
 def ASTAR(wybor):
     print('ASTAR : ' + wybor)
+
+    liczba_odwiedzonych_wezlow = 1
+    liczba_przetworzonych_wezlow = 1
+    czas0 = time.time()
+    AKT_WEZEL = Node(WEZEL_POCZ, 'Root', '', '')
+    ustal_puste_pole(AKT_WEZEL)
+    ustal_mozliwe_ruchy(AKT_WEZEL)
+    print(AKT_WEZEL.tablica,AKT_WEZEL.mozliwe_ruchy)
+    aktualna_glebokosc = 1
+    licz = 0
+    while True:
+        licz +=1
+        print(':/')
+        print('Licznik : ',licz,AKT_WEZEL.tablica)
+        if czy_gotowe(AKT_WEZEL.tablica, WEZEL_ROZW):
+            print('Rozwiązane ! ', AKT_WEZEL.sciezka)
+            return 1
+        elif time.time() - czas0 > MAX_CZAS:
+            print('Czas przekroczony')
+            return -1
+        elif len(AKT_WEZEL.mozliwe_ruchy) == 0:
+            print('Nie ma ruchów')
+            return -1
+        else:
+            for indeks in AKT_WEZEL.mozliwe_ruchy:
+                liczba_przetworzonych_wezlow +=1
+                print('Tu jestem : ',indeks)
+                liczba_przetworzonych_wezlow = 1
+                AKT_WEZEL.przesun_puste_pole(indeks)  # przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
+                NOWY_WEZEL = AKT_WEZEL.dzieci[indeks]  # utworzenie nowego węzła
+                print('Nowy węzeł tablica: ',NOWY_WEZEL.tablica)
+                if wybor == 'MANH':
+                    wynik1 = Manhattan(NOWY_WEZEL.tablica)
+                elif wybor == 'HAMM':
+                    print('Hamming tu jest ')
+                    wynik1 = Hamming(NOWY_WEZEL.tablica)
+
+                AKT_WEZEL.wynikfunkcji[indeks] = wynik1
+
+            print('Słownik: ',AKT_WEZEL.wynikfunkcji)
+            minimalnawart=min(AKT_WEZEL.wynikfunkcji.values())
+            tymcz = []
+            for i in AKT_WEZEL.wynikfunkcji:
+                if AKT_WEZEL.wynikfunkcji[i] == minimalnawart:
+                    tymcz.append(i)
+            print('TYMCZ', tymcz)
+            nr = random.randint(0,len(tymcz)-1)
+            print('Losowanie: ', tymcz[nr])
+            AKT_WEZEL.przesun_puste_pole(tymcz[nr])
+            NOWY_WEZEL = AKT_WEZEL.dzieci[tymcz[nr]]
+            AKT_WEZEL = NOWY_WEZEL
+            ustal_puste_pole(AKT_WEZEL)
+            ustal_mozliwe_ruchy(AKT_WEZEL)
+
+    liczba_odwiedzonych_wezlow +=1
+
+
+
+
+
+
+
+
+
+
+
+
+def Hamming(tablica):
+    wynik = 0
+    for i in range(len(tablica)):
+        for j in range(len(tablica[i])):
+            if tablica[i][j] != WEZEL_ROZW[i][j]:
+                wynik += 1
+    return wynik
+
+
+def Manhattan(tablica):
+    wynik = 0
+
+    def ustal_wspolrzedne(liczba, tab):
+        tzwr = [9, 9]
+        for i in range(len(tab)):
+            for j in range(len(tab[i])):
+                if tab[i][j] == liczba:
+                    tzwr = [i, j]
+        return tzwr
+
+    for i in range(16):
+        tb = ustal_wspolrzedne(str(i), tablica)  # współrzędne i w tablicy biezącej  [1,3]
+        tw = ustal_wspolrzedne(str(i), WEZEL_ROZW)  # współrzędne i w tablicy rozwiązań  [0,0]
+        wynik += (abs(tb[0] - tw[0]) + abs(tb[1] - tw[1]))  # |1-0| + |3-0|
+
+    return wynik
 
 
 def wczytaj_plik_poczatkowy():
@@ -241,7 +335,7 @@ if __name__ == '__main__':
     # Uruchamianie programu
     # python main.py BFS RDUL 4x4_01_0001.txt 4x4_01_0001_bfs_rdul_sol.txt 4x4_01_0001_bfs_rdul_stats.txt
     # python main.py DFS LUDR 4x4_01_00001.txt 4x4_01_0001_dfs_ludr_sol.txt 4x4_01_0001_dfs_ludr_stats.txt
-    # python main.py ASTR manh 4x4_01_0001.txt 4x4_01_0001_astr_manh_sol.txt 4x4_01_0001_astr_manh_stats.txt
+    # python main.py ASTR HAMM 4x4_01_00001.txt 4x4_01_0001_astr_manh_sol.txt 4x4_01_0001_astr_manh_stats.txt
 
     for i in parametry.ruch:
         RUCH.append(i)
