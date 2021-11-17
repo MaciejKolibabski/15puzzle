@@ -1,9 +1,11 @@
 import argparse
+import time
 
 RUCH = []  # tabela możliwych ruchów- L U R D
 WEZEL_POCZ = []
 WEZEL_ROZW = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
 PUSTE_POLE = [9,9]
+MAX_CZAS = 1
 
 class Node:
     def __init__(self, aktualna_tablica, rodzic, sciezka, poprzedni_ruch):
@@ -67,6 +69,9 @@ def czy_gotowe(rw, rozw):
 
 
 def BFS():
+    liczba_odwiedzonych_wezlow=1
+    liczba_przetworzonych_wezlow=1
+    czas0=time.time()
     AKT_WEZEL = Node(WEZEL_POCZ,'Root','','')
     kolejka = []
     kolejka.append(AKT_WEZEL)
@@ -81,26 +86,42 @@ def BFS():
         #print(AKT_WEZEL.tablica, 'tab')
         print(AKT_WEZEL.tablica, 'Licznik: ' ,licz, PUSTE_POLE,AKT_WEZEL.sciezka,AKT_WEZEL.mozliwe_ruchy,PUSTE_POLE)
         if czy_gotowe(AKT_WEZEL.tablica,WEZEL_ROZW):
-            return 'Rozwiązane poprawnie', AKT_WEZEL.tablica
+            return AKT_WEZEL.tablica, AKT_WEZEL.sciezka, len(AKT_WEZEL.sciezka), liczba_odwiedzonych_wezlow, liczba_przetworzonych_wezlow, time.time()-czas0
+        if time.time()-czas0>MAX_CZAS:
+            return [],'',-1, liczba_odwiedzonych_wezlow, liczba_przetworzonych_wezlow, time.time()-czas0
         for element in AKT_WEZEL.mozliwe_ruchy:
+            liczba_przetworzonych_wezlow+=1
             AKT_WEZEL.przesun_puste_pole(element)
             NOWY_WEZEL = AKT_WEZEL.dzieci[element]
             #print('_____n_', NOWY_WEZEL.tablica)
             kolejka.append(NOWY_WEZEL)
         kolejka.remove(AKT_WEZEL)
-
-        zapis_do_pliku_rozw(parametry.plik_z_rozwiazaniem, str(AKT_WEZEL.sciezka), AKT_WEZEL.sciezka)
+        liczba_odwiedzonych_wezlow+=1
 
 
 
 def zapis_do_pliku_rozw(plik, dlugosc_rozw, pokonane_ruchy):
     file = open(plik, 'w+')
-    file.write(str(len(dlugosc_rozw)))
-    file.write('\n')
-    file.write(str(pokonane_ruchy))
+    file.write(str(dlugosc_rozw))
+    if len(pokonane_ruchy)>0:
+        file.write('\n')
+        file.write(str(pokonane_ruchy))
     file.close()
 
 
+def zapis_do_pliku_stat(plik, glebokosc, odwiedzone, przetworzone, czas ):
+    file = open(plik, 'w+')
+    file.write(str(glebokosc))
+    file.write('\n')
+    if glebokosc > 0 :
+        file.write(str(odwiedzone))
+        file.write('\n')
+        file.write(str(przetworzone))
+        file.write('\n')
+        file.write(str(glebokosc))
+        file.write('\n')
+        file.write(str(round((czas) * 1000, 3)))
+    file.close()
 
 
 
@@ -182,7 +203,14 @@ if __name__ == '__main__':
     wczytaj_plik_poczatkowy()
 
     if parametry.strategia == 'BFS':
-        print(BFS())
+        tab_zwr=BFS()
+        if tab_zwr[2] == -1:
+            zapis_do_pliku_rozw(parametry.plik_z_rozwiazaniem, -1, '')
+        else:
+            print(tab_zwr[0])
+            zapis_do_pliku_rozw(parametry.plik_z_rozwiazaniem, len(str(tab_zwr[1])), tab_zwr[1])
+            zapis_do_pliku_stat(parametry.plik_statystyka, len(str(tab_zwr[1])), tab_zwr[3], tab_zwr[4], tab_zwr[5] )
+
 
     elif parametry.strategia == 'DFS':
         DFS()
