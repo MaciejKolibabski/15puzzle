@@ -121,9 +121,6 @@ def zapis_do_pliku_stat(plik, glebokosc, odwiedzone, przetworzone, czas):
     file.close()
 
 
-
-
-
 def DFS():
     print('DFS :(    ')
     liczba_odwiedzonych_wezlow = 1
@@ -137,25 +134,25 @@ def DFS():
     licz = 0
     while True:
         licz += 1
-        print(licz,'___',aktualna_glebokosc,AKT_WEZEL.tablica,AKT_WEZEL.mozliwe_ruchy)
+        print(licz, '___', aktualna_glebokosc, AKT_WEZEL.tablica, AKT_WEZEL.mozliwe_ruchy)
         if czy_gotowe(AKT_WEZEL.tablica, WEZEL_ROZW):
             print('Rozwiązane !!!')
-            print('AKT_WQEZEL:: ',AKT_WEZEL.tablica)
+            # print('AKT_WQEZEL:: ',AKT_WEZEL.tablica)
             return AKT_WEZEL.tablica, AKT_WEZEL.sciezka, len(
                 AKT_WEZEL.sciezka), liczba_odwiedzonych_wezlow, liczba_przetworzonych_wezlow, time.time() - czas0
         if time.time() - czas0 > MAX_CZAS:
             return [], '', -1, liczba_odwiedzonych_wezlow, liczba_przetworzonych_wezlow, time.time() - czas0
-        elif aktualna_glebokosc>=MAX_GLEBOKOSC:
-            print('max gl')
-            NOWY_WEZEL=AKT_WEZEL.rodzic
+        elif aktualna_glebokosc >= MAX_GLEBOKOSC:
+            print('max głębokość: ')
+            NOWY_WEZEL = AKT_WEZEL.rodzic
             if aktualna_glebokosc == 1:
                 print('Nie ma rozwiązania')
                 return -1
             aktualna_glebokosc -= 1
             AKT_WEZEL = NOWY_WEZEL
             ustal_puste_pole(AKT_WEZEL)
-            #return -1
-        elif len(AKT_WEZEL.mozliwe_ruchy)==0:
+            # return -1
+        elif len(AKT_WEZEL.mozliwe_ruchy) == 0:
             print('mie ma już dzieci')
             NOWY_WEZEL = AKT_WEZEL.rodzic
             if aktualna_glebokosc == 1:
@@ -164,21 +161,23 @@ def DFS():
             aktualna_glebokosc -= 1
             AKT_WEZEL = NOWY_WEZEL
             ustal_puste_pole(AKT_WEZEL)
-            #return -1
-        elif time.time()-czas0>MAX_CZAS:
+            # return -1
+        elif time.time() - czas0 > MAX_CZAS:
             print('przekroczony czas')
             return -1
         else:
-
-            nowy_ruch=AKT_WEZEL.mozliwe_ruchy[0] #ustalenie 1ego możliwego ruchu
-            print('działamy !!!', nowy_ruch,PUSTE_POLE)
-            AKT_WEZEL.przesun_puste_pole(nowy_ruch) #przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
-            NOWY_WEZEL = AKT_WEZEL.dzieci[nowy_ruch] #utworzenie nowego węzła
-            AKT_WEZEL.mozliwe_ruchy.remove(nowy_ruch) #w starym węźłe usuwamy ruch który już wykonaliśmy
-            aktualna_glebokosc += 1 #zwiększenie głębokości bo przechodzimy do węzła
-            AKT_WEZEL = NOWY_WEZEL # aktualnym węzłem staje się "dziecko"
+            nowy_ruch = AKT_WEZEL.mozliwe_ruchy[0]  # ustalenie 1ego możliwego ruchu
+            liczba_przetworzonych_wezlow += 1
+            print('działamy !!!', nowy_ruch, PUSTE_POLE)
+            AKT_WEZEL.przesun_puste_pole(
+                nowy_ruch)  # przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
+            NOWY_WEZEL = AKT_WEZEL.dzieci[nowy_ruch]  # utworzenie nowego węzła
+            AKT_WEZEL.mozliwe_ruchy.remove(nowy_ruch)  # w starym węźłe usuwamy ruch który już wykonaliśmy
+            aktualna_glebokosc += 1  # zwiększenie głębokości bo przechodzimy do węzła
+            AKT_WEZEL = NOWY_WEZEL  # aktualnym węzłem staje się "dziecko"
             ustal_puste_pole(AKT_WEZEL)
             ustal_mozliwe_ruchy(AKT_WEZEL)
+        liczba_odwiedzonych_wezlow += 1
 
 
 def ASTAR(wybor):
@@ -213,7 +212,7 @@ def ustal_mozliwe_ruchy(WEZEL):
         TabRob.remove('D')
     if (PUSTE_POLE[1] == 0 and 'L' in TabRob):
         TabRob.remove('L')
-    if (PUSTE_POLE[1] == 3 and 'R' in TabRob):
+    if PUSTE_POLE[1] == 3 and 'R' in TabRob:
         TabRob.remove('R')
     # wykluczenie cofania się w te same miejsca
     if (WEZEL.poprzedni_ruch == 'D' and 'U' in TabRob):
@@ -258,14 +257,24 @@ if __name__ == '__main__':
             zapis_do_pliku_rozw(parametry.plik_z_rozwiazaniem, len(str(tab_zwr[1])), tab_zwr[1])
             zapis_do_pliku_stat(parametry.plik_statystyka, len(str(tab_zwr[1])), tab_zwr[3], tab_zwr[4], tab_zwr[5])
 
+
+
+
+
     elif parametry.strategia == 'DFS':
-        tab_zwr = BFS()
+        tab_zwr = DFS()
         if tab_zwr[2] == -1:
             zapis_do_pliku_rozw(parametry.plik_z_rozwiazaniem, -1, '')
         else:
             print(tab_zwr[0])
             zapis_do_pliku_rozw(parametry.plik_z_rozwiazaniem, len(str(tab_zwr[1])), tab_zwr[1])
             zapis_do_pliku_stat(parametry.plik_statystyka, len(str(tab_zwr[1])), tab_zwr[3], tab_zwr[4], tab_zwr[5])
+
+
+
+
+
+
     elif parametry.strategia == 'ASTAR':
         RUCH = ['L', 'U', 'R', 'D']
         ASTAR(parametry.ruch)
