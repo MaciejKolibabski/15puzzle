@@ -200,10 +200,11 @@ def ASTAR(wybor):
         print('Licznik : ', licz, AKT_WEZEL.tablica)
         if czy_gotowe(AKT_WEZEL.tablica, WEZEL_ROZW):
             print('Rozwiązane ! ', AKT_WEZEL.sciezka)
-            return 1
+            return AKT_WEZEL.tablica, AKT_WEZEL.sciezka, len(
+                AKT_WEZEL.sciezka), liczba_odwiedzonych_wezlow, liczba_przetworzonych_wezlow, time.time() - czas0
         elif time.time() - czas0 > MAX_CZAS:
             print('Czas przekroczony')
-            return -1
+            return [], '', -1, liczba_odwiedzonych_wezlow, liczba_przetworzonych_wezlow, time.time() - czas0
         elif len(AKT_WEZEL.mozliwe_ruchy) == 0:
             print('Nie ma ruchów')
             return -1
@@ -211,7 +212,7 @@ def ASTAR(wybor):
             for indeks in AKT_WEZEL.mozliwe_ruchy:
                 liczba_przetworzonych_wezlow += 1
                 print('Tu jestem : ', indeks)
-                liczba_przetworzonych_wezlow = 1
+                #liczba_przetworzonych_wezlow = 1
                 AKT_WEZEL.przesun_puste_pole(
                     indeks)  # przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
                 NOWY_WEZEL = AKT_WEZEL.dzieci[indeks]  # utworzenie nowego węzła
@@ -327,7 +328,7 @@ if __name__ == '__main__':
     # Uruchamianie programu
     # python main.py BFS RDUL 4x4_01_0001.txt 4x4_01_0001_bfs_rdul_sol.txt 4x4_01_0001_bfs_rdul_stats.txt
     # python main.py DFS LUDR 4x4_01_00001.txt 4x4_01_0001_dfs_ludr_sol.txt 4x4_01_0001_dfs_ludr_stats.txt
-    # python main.py ASTR HAMM 4x4_01_00001.txt 4x4_01_0001_astr_manh_sol.txt 4x4_01_0001_astr_manh_stats.txt
+    # python main.py ASTAR HAMM 4x4_01_00001.txt astr_manh_sol.txt 4astr_manh_stats.txt
 
     for i in parametry.ruch:
         RUCH.append(i)
@@ -356,4 +357,10 @@ if __name__ == '__main__':
 
     elif parametry.strategia == 'ASTAR':
         RUCH = ['L', 'U', 'R', 'D']
-        ASTAR(parametry.ruch)
+        tab_zwr = ASTAR(parametry.ruch)
+        if tab_zwr[2] == -1:
+            zapis_do_pliku_rozw(parametry.plik_z_rozwiazaniem, -1, '')
+        else:
+            print(tab_zwr[0])
+            zapis_do_pliku_rozw(parametry.plik_z_rozwiazaniem, len(str(tab_zwr[1])), tab_zwr[1])
+            zapis_do_pliku_stat(parametry.plik_statystyka, len(str(tab_zwr[1])), tab_zwr[3], tab_zwr[4], tab_zwr[5])
