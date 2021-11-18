@@ -344,9 +344,6 @@ if __name__ == '__main__':
             zapis_do_pliku_stat(parametry.plik_statystyka, len(str(tab_zwr[1])), tab_zwr[3], tab_zwr[4], tab_zwr[5])
 
 
-
-
-
     elif parametry.strategia == 'DFS':
         tab_zwr = DFS()
         if tab_zwr[2] == -1:
