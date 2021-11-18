@@ -171,7 +171,8 @@ def DFS():
             nowy_ruch = AKT_WEZEL.mozliwe_ruchy[0]  # ustalenie 1ego możliwego ruchu
             liczba_przetworzonych_wezlow += 1
             print('działamy !!!', nowy_ruch, PUSTE_POLE)
-            AKT_WEZEL.przesun_puste_pole(nowy_ruch)  # przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
+            AKT_WEZEL.przesun_puste_pole(
+                nowy_ruch)  # przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
             NOWY_WEZEL = AKT_WEZEL.dzieci[nowy_ruch]  # utworzenie nowego węzła
             AKT_WEZEL.mozliwe_ruchy.remove(nowy_ruch)  # w starym węźłe usuwamy ruch który już wykonaliśmy
             aktualna_glebokosc += 1  # zwiększenie głębokości bo przechodzimy do węzła
@@ -190,13 +191,13 @@ def ASTAR(wybor):
     AKT_WEZEL = Node(WEZEL_POCZ, 'Root', '', '')
     ustal_puste_pole(AKT_WEZEL)
     ustal_mozliwe_ruchy(AKT_WEZEL)
-    print(AKT_WEZEL.tablica,AKT_WEZEL.mozliwe_ruchy)
+    print(AKT_WEZEL.tablica, AKT_WEZEL.mozliwe_ruchy)
     aktualna_glebokosc = 1
     licz = 0
     while True:
-        licz +=1
+        licz += 1
         print(':/')
-        print('Licznik : ',licz,AKT_WEZEL.tablica)
+        print('Licznik : ', licz, AKT_WEZEL.tablica)
         if czy_gotowe(AKT_WEZEL.tablica, WEZEL_ROZW):
             print('Rozwiązane ! ', AKT_WEZEL.sciezka)
             return 1
@@ -208,12 +209,13 @@ def ASTAR(wybor):
             return -1
         else:
             for indeks in AKT_WEZEL.mozliwe_ruchy:
-                liczba_przetworzonych_wezlow +=1
-                print('Tu jestem : ',indeks)
+                liczba_przetworzonych_wezlow += 1
+                print('Tu jestem : ', indeks)
                 liczba_przetworzonych_wezlow = 1
-                AKT_WEZEL.przesun_puste_pole(indeks)  # przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
+                AKT_WEZEL.przesun_puste_pole(
+                    indeks)  # przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
                 NOWY_WEZEL = AKT_WEZEL.dzieci[indeks]  # utworzenie nowego węzła
-                print('Nowy węzeł tablica: ',NOWY_WEZEL.tablica)
+                print('Nowy węzeł tablica: ', NOWY_WEZEL.tablica)
                 if wybor == 'MANH':
                     wynik1 = Manhattan(NOWY_WEZEL.tablica)
                 elif wybor == 'HAMM':
@@ -222,14 +224,14 @@ def ASTAR(wybor):
 
                 AKT_WEZEL.wynikfunkcji[indeks] = wynik1
 
-            print('Słownik: ',AKT_WEZEL.wynikfunkcji)
-            minimalnawart=min(AKT_WEZEL.wynikfunkcji.values())
+            print('Słownik: ', AKT_WEZEL.wynikfunkcji)
+            minimalnawart = min(AKT_WEZEL.wynikfunkcji.values())
             tymcz = []
             for i in AKT_WEZEL.wynikfunkcji:
                 if AKT_WEZEL.wynikfunkcji[i] == minimalnawart:
                     tymcz.append(i)
             print('TYMCZ', tymcz)
-            nr = random.randint(0,len(tymcz)-1)
+            nr = random.randint(0, len(tymcz) - 1)
             print('Losowanie: ', tymcz[nr])
             AKT_WEZEL.przesun_puste_pole(tymcz[nr])
             NOWY_WEZEL = AKT_WEZEL.dzieci[tymcz[nr]]
@@ -237,17 +239,7 @@ def ASTAR(wybor):
             ustal_puste_pole(AKT_WEZEL)
             ustal_mozliwe_ruchy(AKT_WEZEL)
 
-    liczba_odwiedzonych_wezlow +=1
-
-
-
-
-
-
-
-
-
-
+        liczba_odwiedzonych_wezlow += 1
 
 
 def Hamming(tablica):
@@ -363,10 +355,6 @@ if __name__ == '__main__':
             print(tab_zwr[0])
             zapis_do_pliku_rozw(parametry.plik_z_rozwiazaniem, len(str(tab_zwr[1])), tab_zwr[1])
             zapis_do_pliku_stat(parametry.plik_statystyka, len(str(tab_zwr[1])), tab_zwr[3], tab_zwr[4], tab_zwr[5])
-
-
-
-
 
 
     elif parametry.strategia == 'ASTAR':
