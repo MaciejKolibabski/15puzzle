@@ -6,8 +6,9 @@ RUCH = []  # tabela możliwych ruchów- L U R D
 WEZEL_POCZ = []
 WEZEL_ROZW = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
 PUSTE_POLE = [9, 9]
-MAX_CZAS = 20
-MAX_GLEBOKOSC = 8
+MAX_CZAS = 200
+MAX_GLEBOKOSC = 20
+
 
 
 class Node:
@@ -79,10 +80,7 @@ def BFS():
         licz += 1
         AKT_WEZEL = kolejka[0]
         ustal_puste_pole(AKT_WEZEL)
-        # print('LEN3: ', len(kolejka),PUSTE_POLE,AKT_WEZEL.mozliwe_ruchy)
         ustal_mozliwe_ruchy(AKT_WEZEL)
-        # print('LEN3: ', len(kolejka), PUSTE_POLE)
-        # print(AKT_WEZEL.tablica, 'tab')
         print(AKT_WEZEL.tablica, 'Licznik: ', licz, PUSTE_POLE, AKT_WEZEL.sciezka, AKT_WEZEL.mozliwe_ruchy, PUSTE_POLE)
         if czy_gotowe(AKT_WEZEL.tablica, WEZEL_ROZW):
             return AKT_WEZEL.tablica, AKT_WEZEL.sciezka, len(
@@ -93,7 +91,6 @@ def BFS():
             liczba_przetworzonych_wezlow += 1
             AKT_WEZEL.przesun_puste_pole(element)
             NOWY_WEZEL = AKT_WEZEL.dzieci[element]
-            # print('_____n_', NOWY_WEZEL.tablica)
             kolejka.append(NOWY_WEZEL)
         kolejka.remove(AKT_WEZEL)
         liczba_odwiedzonych_wezlow += 1
@@ -139,10 +136,10 @@ def DFS():
         print(licz, '___', aktualna_glebokosc, AKT_WEZEL.tablica, AKT_WEZEL.mozliwe_ruchy)
         if czy_gotowe(AKT_WEZEL.tablica, WEZEL_ROZW):
             print('Rozwiązane !!!')
-            # print('AKT_WQEZEL:: ',AKT_WEZEL.tablica)
             return AKT_WEZEL.tablica, AKT_WEZEL.sciezka, len(
                 AKT_WEZEL.sciezka), liczba_odwiedzonych_wezlow, liczba_przetworzonych_wezlow, time.time() - czas0
         if time.time() - czas0 > MAX_CZAS:
+            print('CZAS ZOSTAL  PRZEKROCZONY !!!!!!!!!!!!!!!!!!!!!!!')
             return [], '', -1, liczba_odwiedzonych_wezlow, liczba_przetworzonych_wezlow, time.time() - czas0
         elif aktualna_glebokosc >= MAX_GLEBOKOSC:
             print('max głębokość: ')
@@ -153,7 +150,6 @@ def DFS():
             aktualna_glebokosc -= 1
             AKT_WEZEL = NOWY_WEZEL
             ustal_puste_pole(AKT_WEZEL)
-            # return -1
         elif len(AKT_WEZEL.mozliwe_ruchy) == 0:
             print('mie ma już dzieci')
             NOWY_WEZEL = AKT_WEZEL.rodzic
@@ -163,16 +159,14 @@ def DFS():
             aktualna_glebokosc -= 1
             AKT_WEZEL = NOWY_WEZEL
             ustal_puste_pole(AKT_WEZEL)
-            # return -1
         elif time.time() - czas0 > MAX_CZAS:
             print('przekroczony czas')
             return -1
         else:
             nowy_ruch = AKT_WEZEL.mozliwe_ruchy[0]  # ustalenie 1ego możliwego ruchu
             liczba_przetworzonych_wezlow += 1
-            print('działamy !!!', nowy_ruch, PUSTE_POLE)
-            AKT_WEZEL.przesun_puste_pole(
-                nowy_ruch)  # przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
+            #print('działamy !!!', nowy_ruch, PUSTE_POLE)
+            AKT_WEZEL.przesun_puste_pole(nowy_ruch)  # przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
             NOWY_WEZEL = AKT_WEZEL.dzieci[nowy_ruch]  # utworzenie nowego węzła
             AKT_WEZEL.mozliwe_ruchy.remove(nowy_ruch)  # w starym węźłe usuwamy ruch który już wykonaliśmy
             aktualna_glebokosc += 1  # zwiększenie głębokości bo przechodzimy do węzła
@@ -196,12 +190,11 @@ def ASTAR(wybor):
     licz = 0
     while True:
         licz += 1
-        print(':/')
-        print('Licznik : ', licz, AKT_WEZEL.tablica)
+        # print(':/')
+        # print('Licznik : ', licz, AKT_WEZEL.tablica)
         if czy_gotowe(AKT_WEZEL.tablica, WEZEL_ROZW):
             print('Rozwiązane ! ', AKT_WEZEL.sciezka)
-            return AKT_WEZEL.tablica, AKT_WEZEL.sciezka, len(
-                AKT_WEZEL.sciezka), liczba_odwiedzonych_wezlow, liczba_przetworzonych_wezlow, time.time() - czas0
+            return AKT_WEZEL.tablica, AKT_WEZEL.sciezka, len( AKT_WEZEL.sciezka), liczba_odwiedzonych_wezlow, liczba_przetworzonych_wezlow, time.time() - czas0
         elif time.time() - czas0 > MAX_CZAS:
             print('Czas przekroczony')
             return [], '', -1, liczba_odwiedzonych_wezlow, liczba_przetworzonych_wezlow, time.time() - czas0
@@ -211,10 +204,9 @@ def ASTAR(wybor):
         else:
             for indeks in AKT_WEZEL.mozliwe_ruchy:
                 liczba_przetworzonych_wezlow += 1
-                print('Tu jestem : ', indeks)
+                # print('Tu jestem : ', indeks)
                 #liczba_przetworzonych_wezlow = 1
-                AKT_WEZEL.przesun_puste_pole(
-                    indeks)  # przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
+                AKT_WEZEL.przesun_puste_pole(indeks)  # przesunięcie pustego pola w to miejsc i utworzenie "dziecka" w tym kierunku
                 NOWY_WEZEL = AKT_WEZEL.dzieci[indeks]  # utworzenie nowego węzła
                 print('Nowy węzeł tablica: ', NOWY_WEZEL.tablica)
                 if wybor == 'MANH':
@@ -225,7 +217,7 @@ def ASTAR(wybor):
 
                 AKT_WEZEL.wynikfunkcji[indeks] = wynik1
 
-            print('Słownik: ', AKT_WEZEL.wynikfunkcji)
+            #print('Słownik: ', AKT_WEZEL.wynikfunkcji)
             minimalnawart = min(AKT_WEZEL.wynikfunkcji.values())
             tymcz = []
             for i in AKT_WEZEL.wynikfunkcji:
@@ -326,8 +318,8 @@ if __name__ == '__main__':
     parametry = parser.parse_args()
 
     # Uruchamianie programu
-    # python main.py BFS RDUL 4x4_01_0001.txt 4x4_01_0001_bfs_rdul_sol.txt 4x4_01_0001_bfs_rdul_stats.txt
-    # python main.py DFS LUDR 4x4_01_00001.txt 4x4_01_0001_dfs_ludr_sol.txt 4x4_01_0001_dfs_ludr_stats.txt
+    # python main.py BFS RDUL 4x4_01_00001.txt 4x4_01_00001_bfs_rdul_sol.txt 4x4_01_00001_bfs_rdul_stats.txt
+    # python main.py DFS DRLU 4x4_06_00001.txt 4x4_06_00001_DFS_drlu_sol.txt 4x4_06_00001_DFS_drlu_stats.txt
     # python main.py ASTAR HAMM 4x4_01_00001.txt astr_manh_sol.txt 4astr_manh_stats.txt
 
     for i in parametry.ruch:
@@ -356,7 +348,7 @@ if __name__ == '__main__':
 
 
     elif parametry.strategia == 'ASTAR':
-        RUCH = ['L', 'U', 'R', 'D']
+        RUCH = ['L', 'R', 'U', 'D']
         tab_zwr = ASTAR(parametry.ruch)
         if tab_zwr[2] == -1:
             zapis_do_pliku_rozw(parametry.plik_z_rozwiazaniem, -1, '')
